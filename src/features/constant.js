@@ -1,1 +1,1 @@
-export const baseUrl = "https://shopify-back.vercel.app";
+export const baseUrl = "https://shopify-back.onrender.com";
