@@ -7,7 +7,6 @@ import {
   setCart,
   cartClear,
 } from "./storage";
-
 const userSlice = createSlice({
   name: "useSlice",
   initialState: {
