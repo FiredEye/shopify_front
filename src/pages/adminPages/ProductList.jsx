@@ -205,7 +205,7 @@ const ProductList = () => {
                       },
                       index
                     ) => {
-                      const isLast = index === products.length - 1;
+                      const isLast = index === data?.products.length - 1;
                       const classes = isLast
                         ? "p-4"
                         : "p-4 border-b border-blue-gray-50";
