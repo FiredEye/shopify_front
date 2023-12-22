@@ -6,7 +6,6 @@ import { useAdminUpdateMutation } from "../../features/authApi";
 import { toast } from "react-toastify";
 import { adminUpdate } from "../../features/userSlice";
 import { useState } from "react";
-import { baseUrl } from "../../features/constant";
 
 const UpdateAdminForm = () => {
   const [update, { isLoading }] = useAdminUpdateMutation();
@@ -39,7 +38,7 @@ const UpdateAdminForm = () => {
       fullname: user?.fullname,
       email: user?.email,
       profile_image: null,
-      preview: `${baseUrl}${user.profile_image}`,
+      preview: `${user.profile_image}`,
     },
     onSubmit: async (val) => {
       let formData = new FormData();

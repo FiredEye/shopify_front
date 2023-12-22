@@ -20,7 +20,6 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAll } from "../features/userSlice";
-import { baseUrl } from "../features/constant";
 
 import ContentWrapper from "./ContentWrapper";
 const menuItems = [
@@ -68,7 +67,6 @@ const Header = () => {
     if (search) {
       nav(`/searchProduct/${search.trim()}`);
       setSearch("");
-      setShowInput(false)
     }
   };
   return (
@@ -172,7 +170,7 @@ const Header = () => {
                       size="sm"
                       alt="tania andrew"
                       className="border border-blue-500 p-0.5"
-                      src={`${baseUrl}${user.profile_image}`}
+                      src={`${user.profile_image}`}
                     />
                     <ChevronDownIcon
                       strokeWidth={2.5}

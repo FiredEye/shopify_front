@@ -1,7 +1,7 @@
 import { Rating } from "@material-tailwind/react";
 import React from "react";
 import { useGetSimilarProductsQuery } from "../features/productApi";
-import { baseUrl } from "../features/constant";
+
 import { useNavigate } from "react-router-dom";
 import Image from "./lazyLoadImage/Image";
 
@@ -48,7 +48,7 @@ const SimilarProducts = ({ productID }) => {
                         <div className="shrink-0 ">
                           <div className=" relative block w-[140px] lg:w-[200px]  aspect-[3/2] rounded-xl overflow-hidden bg-blue-gray-600">
                             <Image
-                              src={`${baseUrl}${product.product_image}`}
+                              src={`${product.product_image}`}
                               alt="product image"
                             />
                           </div>

@@ -21,7 +21,6 @@ import {
   useDeleteProductMutation,
   useGetProductsQuery,
 } from "../../features/productApi";
-import { baseUrl } from "../../features/constant";
 import { toast } from "react-toastify";
 import ContentWrapper from "../../components/ContentWrapper";
 
@@ -216,10 +215,7 @@ const ProductList = () => {
                         <tr key={_id}>
                           <td className={classes}>
                             <div className="flex items-center gap-3">
-                              <Avatar
-                                src={`${baseUrl}${product_image}`}
-                                size="sm"
-                              />
+                              <Avatar src={`${product_image}`} size="sm" />
                               <div className="flex flex-col">
                                 <Typography
                                   variant="small"

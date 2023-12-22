@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useReviewProductMutation } from "../features/productApi";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { baseUrl } from "../features/constant";
 
 const Review = ({ product }) => {
   const reviewSchema = Yup.object().shape({
@@ -111,7 +110,7 @@ const Review = ({ product }) => {
                 <Avatar
                   size="lg"
                   variant="circular"
-                  src={`${baseUrl}${review.user_info?.profile_image}`}
+                  src={`${review.user_info?.profile_image}`}
                   alt="tania andrew"
                 />
 

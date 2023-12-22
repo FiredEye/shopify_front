@@ -5,7 +5,6 @@ import * as Yup from "yup";
 import { useUserUpdateMutation } from "../../features/authApi";
 import { toast } from "react-toastify";
 import { userUpdate } from "../../features/userSlice";
-import { baseUrl } from "../../features/constant";
 import { useState } from "react";
 
 const UpdateForm = () => {
@@ -41,7 +40,7 @@ const UpdateForm = () => {
       address: user?.shippingAddress.address,
       city: user?.shippingAddress.city,
       profile_image: null,
-      preview: `${baseUrl}${user.profile_image}`,
+      preview: `${user.profile_image}`,
     },
     onSubmit: async (val) => {
       let formData = new FormData();

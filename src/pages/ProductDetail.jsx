@@ -1,4 +1,3 @@
-import { baseUrl } from "../features/constant";
 import { Rating, Button } from "@material-tailwind/react";
 import Review from "../components/Review.jsx";
 import { useGetProductByIdQuery } from "../features/productApi";
@@ -97,7 +96,7 @@ const ProductDetail = () => {
                 <div className="shrink-0">
                   <div className="relative block w-full lg:w-[480px] xl:w-[600px] aspect-[3/2] rounded-xl overflow-hidden bg-blue-gray-600">
                     <Image
-                      src={`${baseUrl}${product.product_image}`}
+                      src={`${product.product_image}`}
                       alt="product image"
                     />
                   </div>

@@ -1,7 +1,6 @@
 import { Button } from "@material-tailwind/react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { baseUrl } from "../../features/constant";
 import { addOrUpdateCart, removeCart } from "../../features/userSlice";
 import ContentWrapper from "../../components/ContentWrapper";
 import Image from "../../components/lazyLoadImage/Image";
@@ -42,10 +41,7 @@ const CartPage = () => {
                       className="flex flex-col res_xxm:flex-row gap-5  mb-5 w-full bg-gray-200 rounded-lg p-4"
                     >
                       <div className="relative self-center shrink-0 w-[130px] sm:w-[200px] aspect-[3/2] overflow-hidden bg-blue-gray-600 ">
-                        <Image
-                          src={`${baseUrl}${cart.image}`}
-                          alt="product image"
-                        />
+                        <Image src={`${cart.image}`} alt="product image" />
                       </div>
 
                       <div className="flex justify-between w-full">

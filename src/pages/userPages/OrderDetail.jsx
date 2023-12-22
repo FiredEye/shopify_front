@@ -1,7 +1,6 @@
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
-import { baseUrl } from "../../features/constant";
 import { useGetOrderByIdQuery } from "../../features/orderApi";
 import ContentWrapper from "../../components/ContentWrapper";
 import Image from "../../components/lazyLoadImage/Image";
@@ -89,10 +88,7 @@ const OrderDetail = () => {
                         className="flex flex-col res_xxm:flex-row gap-5  mb-5 w-full bg-gray-200 rounded-lg p-4"
                       >
                         <div className="self-center relative shrink-0 w-[130px] sm:w-[200px] aspect-[3/2] overflow-hidden bg-blue-gray-600 ">
-                          <Image
-                            src={`${baseUrl}${order.image}`}
-                            alt="product image"
-                          />
+                          <Image src={`${order.image}`} alt="product image" />
                         </div>
 
                         <div className="flex flex-col justify-between w-full">

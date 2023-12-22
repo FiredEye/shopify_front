@@ -7,7 +7,6 @@ import {
   Button,
   Rating,
 } from "@material-tailwind/react";
-import { baseUrl } from "../features/constant";
 import { useNavigate } from "react-router";
 import Image from "./lazyLoadImage/Image";
 
@@ -23,7 +22,7 @@ const CardUi = ({ product }) => {
         color="blue-gray"
         className="relative h-56 aspect-[3/2] shrink-0"
       >
-        <Image src={`${baseUrl}${product.product_image}`} alt="product image" />
+        <Image src={`${product.product_image}`} alt="product image" />
       </CardHeader>
       <CardBody>
         <p className="text-[22px] font-semibold mb-2 line-clamp-1">
