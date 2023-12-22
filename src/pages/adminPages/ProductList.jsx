@@ -15,7 +15,6 @@ import {
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
-import { products } from "../../dummy/products";
 import { useState } from "react";
 import {
   useDeleteProductMutation,
