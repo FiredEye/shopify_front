@@ -54,9 +54,8 @@ export const productApi = createApi({
       invalidatesTags: ["Product"],
     }),
     deleteProduct: builder.mutation({
-      query: ({ body, token, id }) => ({
+      query: ({ token, id }) => ({
         url: `/api/deleteProduct/${id}`,
-        body,
         headers: {
           Authorization: token,
         },

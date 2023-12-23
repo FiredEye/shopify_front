@@ -1,14 +1,11 @@
-import React from "react";
-import {
-  Card,
-  Input,
-  Button,
-  Typography,
-  Textarea,
-} from "@material-tailwind/react";
+import React, { useState } from "react";
+import { Card, Input, Button, Textarea } from "@material-tailwind/react";
 import { useNavigate } from "react-router";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { v4 as uuidv4 } from "uuid";
+import { storage } from "../../../firebaseConfig";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Select, Option } from "@material-tailwind/react";
 import { useAddProductMutation } from "../../features/productApi";
 import { useSelector } from "react-redux";
@@ -17,8 +14,9 @@ import ContentWrapper from "../../components/ContentWrapper";
 
 const AddProduct = () => {
   const nav = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [addProduct, { isLoading }] = useAddProductMutation();
+  const [addProduct] = useAddProductMutation();
   const { user } = useSelector((store) => store.userInfo);
 
   const productSchema = Yup.object().shape({
@@ -72,23 +70,37 @@ const AddProduct = () => {
       preview: null,
     },
     onSubmit: async (val) => {
-      let formData = new FormData();
-      formData.append("product_name", val.product_name);
-      formData.append("product_detail", val.product_detail);
-      formData.append("product_price", Number(val.product_price));
-      formData.append("brand", val.brand);
-      formData.append("category", val.category);
-      formData.append("countInStock", Number(val.countInStock));
-      formData.append("product_image", val.product_image);
-
       try {
-        const response = await addProduct({
-          body: formData,
-          token: user.token,
-        }).unwrap();
-        toast.success(response);
-        nav(-1);
+        setIsLoading(true);
+        const fileName = `${uuidv4()}.${val.product_image.name
+          .split(".")
+          .pop()}`;
+        const storageRef = ref(storage, "products/" + fileName);
+
+        const uploadTask = uploadBytesResumable(storageRef, val.product_image);
+        uploadTask.then(() => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            let formData = new FormData();
+            formData.append("product_name", val.product_name);
+            formData.append("product_detail", val.product_detail);
+            formData.append("product_price", Number(val.product_price));
+            formData.append("brand", val.brand);
+            formData.append("category", val.category);
+            formData.append("countInStock", Number(val.countInStock));
+            formData.append("product_image", downloadURL);
+
+            const response = await addProduct({
+              body: formData,
+              token: user.token,
+            }).unwrap();
+            toast.success(response);
+            setIsLoading(false);
+            formik.resetForm();
+            nav(-1);
+          });
+        });
       } catch (err) {
+        setIsLoading(false);
         toast.error(err.data);
       }
     },

@@ -31,7 +31,7 @@ import CartPage from "./pages/userPages/CartPage";
 import Shipping from "./pages/userPages/Shipping";
 import OrderPage from "./pages/userPages/OrderPage";
 import UserProfile from "./pages/userPages/UserProfile";
-import OrderDetail from "./pages/userPages/OrderDetail";
+import OrderDetail from "./pages/UserPages/OrderDetail";
 import NotFound from "./pages/NotFound.jsx";
 
 const App = () => {

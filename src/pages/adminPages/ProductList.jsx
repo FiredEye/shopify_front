@@ -11,10 +11,12 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
-
+import { storage } from "../../../firebaseConfig";
+import { ref, deleteObject } from "firebase/storage";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
+import { products } from "../../dummy/products";
 import { useState } from "react";
 import {
   useDeleteProductMutation,
@@ -26,6 +28,7 @@ import ContentWrapper from "../../components/ContentWrapper";
 const TABLE_HEAD = ["Products", "Price", "Created At", "Edit", "Delete"];
 
 const ProductList = () => {
+  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const { user } = useSelector((store) => store.userInfo);
   const [page, setPage] = useState(1);
 
@@ -38,7 +41,6 @@ const ProductList = () => {
   const [
     deleteProduct,
     {
-      isLoading: deleteIsLoading,
       isError: deleteIsError,
 
       error: deleteError,
@@ -57,8 +59,23 @@ const ProductList = () => {
   };
   const handleDelete = async () => {
     try {
+      setDeleteIsLoading(true);
+      if (productIdToDelete.product_image) {
+        const url = new URL(productIdToDelete.product_image);
+
+        const pathWithQuery = decodeURIComponent(url.pathname);
+        const pathAfterO = pathWithQuery.split("/o/")[1];
+
+        const desertRef = ref(storage, pathAfterO);
+        try {
+          // Delete the file
+          await deleteObject(desertRef);
+        } catch (deleteError) {
+          console.error("Error deleting file:", deleteError);
+          // Handle the error or log as needed
+        }
+      }
       const response = await deleteProduct({
-        body: { old_productImg: productIdToDelete.product_image },
         token: user.token,
         id: productIdToDelete.id,
       }).unwrap();
@@ -66,9 +83,11 @@ const ProductList = () => {
         setOpen(false);
         setProductIdToDelete({ id: null, product_image: null });
         toast.success(response);
+        setDeleteIsLoading(false);
       }
     } catch (err) {
       toast.error(err.message);
+      setDeleteIsLoading(false);
     }
   };
   const nav = useNavigate();
@@ -205,7 +224,7 @@ const ProductList = () => {
                       },
                       index
                     ) => {
-                      const isLast = index === data?.products.length - 1;
+                      const isLast = index === products.length - 1;
                       const classes = isLast
                         ? "p-4"
                         : "p-4 border-b border-blue-gray-50";

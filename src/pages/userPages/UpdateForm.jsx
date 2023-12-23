@@ -2,13 +2,22 @@ import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useUserUpdateMutation } from "../../features/authApi";
-import { toast } from "react-toastify";
-import { userUpdate } from "../../features/userSlice";
+import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import {
+  ref,
+  deleteObject,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { storage } from "../../../firebaseConfig";
+import { useUserUpdateMutation } from "../../features/authApi";
+import { userUpdate } from "../../features/userSlice";
 
 const UpdateForm = () => {
-  const [update, { isLoading }] = useUserUpdateMutation();
+  const [isLoading, setIsLoading] = useState(false);
+  const [update] = useUserUpdateMutation();
   const [isImage, setIsImage] = useState(false);
 
   const alwaysValidateSchema = Yup.object().shape({
@@ -43,17 +52,49 @@ const UpdateForm = () => {
       preview: `${user.profile_image}`,
     },
     onSubmit: async (val) => {
-      let formData = new FormData();
-      formData.append("fullname", val.fullname);
-      formData.append("address", val.address);
-      formData.append("city", val.city);
-      formData.append("isEmpty", false);
-
       try {
-        if (formik.values.profile_image !== null) {
-          formData.append("profile_image", val.profile_image);
-          formData.append("old_imgPath", user.profile_image);
+        setIsLoading(true);
+        let formData = new FormData();
+        formData.append("fullname", val.fullname);
+        formData.append("address", val.address);
+        formData.append("city", val.city);
+        formData.append("isEmpty", false);
+
+        if (val.profile_image && user.profile_image) {
+          const url = new URL(user.profile_image);
+
+          const pathWithQuery = decodeURIComponent(url.pathname);
+          const pathAfterO = pathWithQuery.split("/o/")[1];
+
+          const desertRef = ref(storage, pathAfterO);
+
+          // Delete the file
+          try {
+            // Delete the file
+            await deleteObject(desertRef);
+          } catch (deleteError) {
+            console.error("Error deleting file:", deleteError);
+            // Handle the error or log as needed
+          }
+          const fileName = `${uuidv4()}.${val.profile_image.name
+            .split(".")
+            .pop()}`;
+          const storageRef = ref(storage, "profiles/" + fileName);
+          try {
+            const uploadTask = uploadBytesResumable(
+              storageRef,
+              val.profile_image
+            );
+            await uploadTask;
+
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+            formData.append("profile_image", downloadURL);
+          } catch (uploadError) {
+            console.error("Error uploading file:", uploadError);
+          }
         }
+
         const response = await update({
           body: formData,
           token: user.token,
@@ -67,6 +108,7 @@ const UpdateForm = () => {
             })
           );
           toast.success("User details updated!");
+          setIsLoading(false);
           setIsImage(false);
         }
       } catch (err) {

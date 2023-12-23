@@ -3,6 +3,15 @@ import { Card, Input, Button, Textarea } from "@material-tailwind/react";
 import { useNavigate } from "react-router";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { v4 as uuidv4 } from "uuid";
+import {
+  ref,
+  deleteObject,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { storage } from "../../../firebaseConfig";
+
 import { Select, Option } from "@material-tailwind/react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -12,9 +21,9 @@ import ContentWrapper from "../../components/ContentWrapper";
 const EditForm = ({ product }) => {
   const nav = useNavigate();
   const [isImage, setIsImage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [updateProduct, { isLoading, isError, error }] =
-    useUpdateProductMutation();
+  const [updateProduct, { isError, error }] = useUpdateProductMutation();
 
   const { user } = useSelector((store) => store.userInfo);
   const alwaysValidateSchema = Yup.object().shape({
@@ -26,21 +35,22 @@ const EditForm = ({ product }) => {
       .min(10, "too short")
       .max(200, "max character 200")
       .required(),
-    product_price: Yup.string()
-      .min(1, "too short")
-      .max(5, "max character 5")
+    product_price: Yup.number()
+      .min(100, "too little")
+      .max(20000, "max price reached")
       .required(),
+
     brand: Yup.string()
       .min(2, "too short")
       .max(200, "max character 200")
       .required(),
     category: Yup.string()
-      .min(5, "too short")
+      .min(2, "too short")
       .max(20, "max character 20")
       .required(),
-    countInStock: Yup.string()
-      .min(1, "too short")
-      .max(3, "max character 3")
+    countInStock: Yup.number()
+      .min(1, "too little qty")
+      .max(300, "max qty 300")
       .required(),
   });
   const conditionalValidateSchema = Yup.object().shape({
@@ -62,7 +72,7 @@ const EditForm = ({ product }) => {
     initialValues: {
       product_name: product.product_name,
       product_detail: product.product_detail,
-      product_price: product.product_price.toString(),
+      product_price: product.product_price,
       product_image: null,
       brand: product.brand,
       category: product.category,
@@ -70,20 +80,50 @@ const EditForm = ({ product }) => {
       preview: `${product.product_image}`,
     },
     onSubmit: async (val) => {
-      let formData = new FormData();
-      formData.append("product_name", val.product_name);
-      formData.append("product_detail", val.product_detail);
-      formData.append("product_price", Number(val.product_price));
-
-      formData.append("brand", val.brand);
-      formData.append("category", val.category);
-      formData.append("countInStock", Number(val.countInStock));
-
       try {
-        if (formik.values.product_image !== null) {
-          formData.append("product_image", val.product_image);
-          formData.append("old_imgPath", product.product_image);
+        setIsLoading(true);
+
+        let formData = new FormData();
+        formData.append("product_name", val.product_name);
+        formData.append("product_detail", val.product_detail);
+        formData.append("product_price", Number(val.product_price));
+
+        formData.append("brand", val.brand);
+        formData.append("category", val.category);
+        formData.append("countInStock", Number(val.countInStock));
+
+        if (val.product_image && product.product_image) {
+          const url = new URL(product.product_image);
+
+          const pathWithQuery = decodeURIComponent(url.pathname);
+          const pathAfterO = pathWithQuery.split("/o/")[1];
+
+          const desertRef = ref(storage, pathAfterO);
+          try {
+            // Delete the file
+            await deleteObject(desertRef);
+          } catch (deleteError) {
+            console.error("Error deleting file:", deleteError);
+            // Handle the error or log as needed
+          }
+          const fileName = `${uuidv4()}.${val.product_image.name
+            .split(".")
+            .pop()}`;
+          const storageRef = ref(storage, "products/" + fileName);
+          try {
+            const uploadTask = uploadBytesResumable(
+              storageRef,
+              val.product_image
+            );
+            await uploadTask;
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+            formData.append("product_image", downloadURL);
+          } catch (uploadError) {
+            console.error("Error uploading file:", uploadError);
+          }
         }
+
         const response = await updateProduct({
           body: formData,
           token: user.token,
@@ -92,8 +132,10 @@ const EditForm = ({ product }) => {
         toast.success(response);
         nav(-1);
         setIsImage(false);
+        setIsLoading(false);
       } catch (err) {
         toast.error(err.message);
+        setIsLoading(false);
       }
     },
     validationSchema: isImage
@@ -201,6 +243,7 @@ const EditForm = ({ product }) => {
               <Select
                 label="Select Category"
                 name="category"
+                value={formik.values.category}
                 onChange={(e) => formik.setFieldValue("category", e)}
               >
                 <Option value="men">Men's Clothing</Option>

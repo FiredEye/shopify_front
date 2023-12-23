@@ -1,1 +1,1 @@
-export const baseUrl = "https://shopy-back.vercel.app/";
+export const baseUrl = import.meta.env.VITE_BASE_URL;
