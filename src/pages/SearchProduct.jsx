@@ -19,37 +19,36 @@ const SearchProduct = () => {
 
   const skeleItem = () => (
     <Card className="mb-[20px] flex flex-col gap-[14px] cursor-pointer rounded-lg h-fit">
-      <CardHeader className="relative h-56 aspect-[3/2] shrink-0">
+      <CardHeader className="relative h-24 res_xxm:h-36 res_xm:h-56 aspect-[1.7/1.1] res_xxm:aspect-[2/1.2] res_xm:aspect-[3/2] shrink-0">
         <div className="object-cover h-full w-full skeleton"></div>
       </CardHeader>
       <CardBody>
-        <div className="mb-4 w-[75%] h-[22px] skeleton rounded-md"></div>
-        <div className="mb-4 w-[100%] h-[18px] skeleton rounded-md"></div>
-        <div className="mb-4 w-[100%] h-[18px] skeleton rounded-md"></div>
+        <div className="mb-4 w-[75%] h-[18px] res_xm:h-[22px] mt-[-20px] skeleton rounded-md"></div>
+        <div className="mb-4 w-[100%] h-[14px] res_xm:h-[18px] skeleton rounded-md"></div>
+        <div className="mb-4 w-[100%] h-[14px] res_xm:h-[18px] skeleton rounded-md"></div>
 
         <div>
           <div className="flex justify-between">
-            <div className=" w-[40%] h-[18px] skeleton rounded-md"></div>
-            <div className=" w-[40%] h-[18px] skeleton rounded-md"></div>
+            <div className=" w-[40%] h-[14px] res-xm:h-[18px] skeleton rounded-md"></div>
+            <div className=" w-[40%] h-[14px] res-xm:h-[18px] skeleton rounded-md"></div>
           </div>
         </div>
+        <div className="w-[42%] rounded-md h-[28px] mt-4 skeleton"></div>
       </CardBody>
-      <CardFooter className="mt-[-20px]">
-        <div className="w-[45%] skeleton rounded-md h-[40px]"></div>
-      </CardFooter>
     </Card>
   );
   if (isError) return <Error error={error} />;
 
   return (
     <ContentWrapper>
-      <h1 className="my-4 text-[32px] font-bold">
+      <h1 className="my-4 text-[18px] res_xxm:text-[22px] res_xm:text-[32px] font-bold">
         Search reasults for -"{search}"
       </h1>
+
       {!isFetching ? (
         <>
           {data?.products && data?.products.length > 0 ? (
-            <div className=" grid grid-cols-1 gap-y-10 gap-x-5 justify-between res_xm:grid-cols-2 res_sm:grid-cols-3 res_md:grid-cols-4 my-[50px] mx-5 ">
+            <div className=" grid gap-y-10 gap-x-2 res_xm:gap-x-5 justify-between grid-cols-2 res_sm:grid-cols-3 res_md:grid-cols-4 my-[50px] mx-2 res_xm:mx-5 ">
               {!isFetching &&
                 data?.products.map((product) => {
                   return <CardUi key={product._id} product={product} />;

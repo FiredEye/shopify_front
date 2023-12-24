@@ -67,6 +67,7 @@ const Header = () => {
     if (search) {
       nav(`/searchProduct/${search.trim()}`);
       setSearch("");
+      setShowInput(false);
     }
   };
   return (

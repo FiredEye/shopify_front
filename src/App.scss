@@ -26,3 +26,19 @@
     }
   }
 }
+@media screen and (max-width: 650px) {
+  .cardUiStar {
+    span svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+@media screen and (max-width: 450px) {
+  .cardUiStar {
+    span svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
